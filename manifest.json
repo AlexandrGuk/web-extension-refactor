@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "version": "1.0",
+  "name": "Old New Tab",
+  "description": "Default new tab take over with incredible background",
+  "chrome_url_overrides": {
+      "newtab": "index.html"
+  },
+  "icons": {
+      "128": "icon.png"
+  },
+  "browser_action": {
+      "default_icon": "icon.png"
+  },
+  "permissions": ["storage", "unlimitedStorage"],
+  "background": {
+    "scripts": ["js/bg.js"]
+  }
+}
