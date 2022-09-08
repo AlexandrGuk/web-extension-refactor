@@ -19,7 +19,7 @@ function getMethod(methodStr) {
 				acc[val].bind(acc) : acc[val];
         }
 		return null;
-	}, window);
+	}, globalThis);
 }
 function getMethodOr(onNonExist, methodStr) {
 	var m = getMethod(methodStr);
