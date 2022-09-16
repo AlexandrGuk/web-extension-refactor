@@ -1,43 +1,42 @@
-function Storage() {
-	const cStorage = (window.chrome && chrome && chrome.storage && chrome.storage.local);
-	this.get = function(id, callback) {
-		if (cStorage) {
-			cStorage.get(id, function(data) {
-				callback(data && data[id]);
-			});
-		} else {
-			var data = null;
-			try {
-				data = JSON.parse(localStorage[id]);
-			} catch (e) {}
-			callback(data);
-		}
-	};
-	this.set = function(id, data) {
-		if (cStorage) {
-			const obj = {};
-			obj[id] = data;
-			cStorage.set(obj);
-		} else {
-			localStorage[id] = JSON.stringify(data);
+function $(selector) {
+	return document.querySelector(selector);
+}
+
+function $$(selector) {
+	return [...document.querySelectorAll(selector)];
+}
+
+class LocalStorageWrapper {
+	async get(id) {
+		const obj = {}
+		obj[id] = JSON.parse(localStorage[id] || null)
+		return obj;
+	}
+	set(obj) {
+		const [id, data] = Object.entries(obj)[0];
+		if ( id && data ) {
+			localStorage.setItem(String(id), JSON.stringify(data));
 		}
 	}
 }
 
-function SimpleRequest() {
-	this.get = function(url, callback) {
-		callback = callback || function(){};
-		const xhr = new XMLHttpRequest();
-		xhr.open('GET', url, true);
-		xhr.onload = function(){
-			callback(xhr.responseText);
-		};
-		const onError = function(e){
-			callback(false);
-		};
-		xhr.error = onError;
-		xhr.abort = onError;
-		xhr.send(null);
-	};
+class Storage {
+	constructor() {
+		this.storage = chrome?.storage?.local || new LocalStorageWrapper()
+	}
+	async get(id) {
+		const result = await this.storage.get(id);
+		return result[id]
+	}
+
+	set(id, data) {
+		this.storage.set({[id]: data})
+	}
 }
 
+class SimpleRequest {
+	get(url) {
+		return fetch(url).then(r => r.ok ? r.json() : null).catch(_ => null);
+	}
+
+}
